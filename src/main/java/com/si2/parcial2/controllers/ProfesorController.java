@@ -1,0 +1,82 @@
+package com.si2.parcial2.controllers;
+
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.si2.parcial2.entities.profesor;
+import com.si2.parcial2.services.ProfesorServices;
+
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.PutMapping;
+
+
+
+
+@CrossOrigin(origins="http://localhost:4200", originPatterns = "*")
+@RestController
+@RequestMapping("/api/profesor")
+public class ProfesorController {
+     @Autowired   
+    private ProfesorServices service;
+
+    @GetMapping    
+    public List<profesor> list(){
+        return service.findAll();
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<?> view(@PathVariable Long idProfesor){
+
+        Optional<profesor> profOptional= service.findById(idProfesor);
+        if (profOptional.isPresent()) {
+            return ResponseEntity.ok(profOptional.orElseThrow());
+        }
+        return ResponseEntity.notFound().build();
+    }
+    
+    
+    public profesor save(profesor p){
+        return service.save(p);
+    }
+
+    @PostMapping
+    public ResponseEntity<?> create(@RequestBody profesor p){
+        return ResponseEntity.status(HttpStatus.CREATED).body(save(p));
+    }
+    
+    @PutMapping("/{id}")
+    public ResponseEntity<?> update(@RequestBody profesor profesor, @PathVariable Long idProfesor) {
+        Optional<profesor> profOptional = service.findById(idProfesor);
+        if (profOptional.isPresent()) {
+            profesor currentProfesor = profOptional.get();
+            currentProfesor.setNombre(profesor.getNombre());
+            currentProfesor.setDireccion(profesor.getDireccion());
+            currentProfesor.setTelefono(profesor.getTelefono());
+            profesor updatedProfesor = service.save(currentProfesor);
+            return ResponseEntity.status(HttpStatus.CREATED).body(updatedProfesor);
+        }
+        return ResponseEntity.notFound().build();
+    }
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> delete(@PathVariable Long idProfesor){
+        Optional<profesor> profOptional= service.findById(idProfesor);
+        if (profOptional.isPresent()) {
+            service.deleteById(idProfesor);
+            return ResponseEntity.ok().build();
+        }
+        return ResponseEntity.notFound().build();
+    }
+}
