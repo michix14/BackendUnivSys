@@ -3,14 +3,20 @@ package com.si2.parcial2.controllers;
 import java.util.List;
 import java.util.Optional;
 
+import org.hibernate.mapping.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.si2.parcial2.entities.User;
 import com.si2.parcial2.entities.profesor;
 import com.si2.parcial2.services.ProfesorServices;
+import com.si2.parcial2.services.UserService;
+
+import jakarta.validation.Valid;
 
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -25,12 +31,14 @@ import org.springframework.web.bind.annotation.PutMapping;
 
 
 
-@CrossOrigin(origins="http://localhost:4200", originPatterns = "*")
+@CrossOrigin(origins="*", originPatterns = "*")
 @RestController
 @RequestMapping("/api/profesor")
 public class ProfesorController {
      @Autowired   
     private ProfesorServices service;
+     @Autowired
+    private UserService userService;
 
     @GetMapping    
     public List<profesor> list(){
@@ -78,5 +86,25 @@ public class ProfesorController {
             return ResponseEntity.ok().build();
         }
         return ResponseEntity.notFound().build();
+
+    }
+
+  @PostMapping("/register")
+    public ResponseEntity<?> registerProfesorWithUser(@Valid @RequestBody profesor p, BindingResult result) {
+        if (result.hasErrors()) {
+            return ResponseEntity.badRequest().body("Validation errors");
+        }
+
+        try {
+            // Registrar el usuario
+            User createdUser = userService.save(p.getUser());
+            // Registrar el profesor con el usuario creado
+            p.setUser(createdUser);
+            profesor savedProfesor = service.save(p);
+
+            return ResponseEntity.status(HttpStatus.CREATED).body(savedProfesor);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
     }
 }

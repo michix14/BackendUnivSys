@@ -21,7 +21,7 @@ public class IsExistsDbValidation implements ConstraintValidator<IsExistsDb, Str
             return true;
         }
 
-        return !service.existsBySku(value);
+        return false;
     }
     
 }

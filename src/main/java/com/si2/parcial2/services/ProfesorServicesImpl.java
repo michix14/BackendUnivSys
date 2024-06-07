@@ -7,14 +7,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.si2.parcial2.entities.User;
 import com.si2.parcial2.entities.profesor;
 import com.si2.parcial2.repositories.ProfesorRepository;
+import com.si2.parcial2.repositories.UserRepository;
 
 @Service
 public class ProfesorServicesImpl implements ProfesorServices {
    
     @Autowired
     private ProfesorRepository repository;
+    @Autowired
+    private UserRepository userRepository;
     @Transactional(readOnly = true)
     @Override
     public List<profesor> findAll() {
@@ -40,10 +44,16 @@ public class ProfesorServicesImpl implements ProfesorServices {
     public void deleteById(Long idProfesor) {
         repository.deleteById(idProfesor);
     }
+
+    @Transactional
     @Override
-    @Transactional(readOnly = true)
-    public boolean existsBySku(String sku) {
-        return repository.existsBySku(sku);
+    public profesor registerProfesorWithUser(profesor profesor, User user) {
+        if (userRepository.existsByUsername(user.getUsername())) {
+            throw new RuntimeException("Username already exists");
+        }
+        User savedUser = userRepository.save(user);
+        profesor.setUser(savedUser);
+        return repository.save(profesor);
     }
 
 }
