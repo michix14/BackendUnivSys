@@ -45,9 +45,10 @@ public class ProfesorController {
         return service.findAll();
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/{idProfesor}")
     public ResponseEntity<?> view(@PathVariable Long idProfesor){
 
+        System.out.println(idProfesor +" aver esto es el id"); 
         Optional<profesor> profOptional= service.findById(idProfesor);
         if (profOptional.isPresent()) {
             return ResponseEntity.ok(profOptional.orElseThrow());
@@ -65,7 +66,7 @@ public class ProfesorController {
         return ResponseEntity.status(HttpStatus.CREATED).body(save(p));
     }
     
-    @PutMapping("/{id}")
+    @PutMapping("/{idProfesor}")
     public ResponseEntity<?> update(@RequestBody profesor profesor, @PathVariable Long idProfesor) {
         Optional<profesor> profOptional = service.findById(idProfesor);
         if (profOptional.isPresent()) {
@@ -78,7 +79,7 @@ public class ProfesorController {
         }
         return ResponseEntity.notFound().build();
     }
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/{idProfesor}")
     public ResponseEntity<?> delete(@PathVariable Long idProfesor){
         Optional<profesor> profOptional= service.findById(idProfesor);
         if (profOptional.isPresent()) {

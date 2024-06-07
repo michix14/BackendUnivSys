@@ -13,7 +13,7 @@ import jakarta.persistence.Table;
 public class profesor {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long idProfesor;
+    private Long idProfesor;
     
 
     private String nombre;
@@ -32,10 +32,10 @@ public class profesor {
         public void setUser(User user) {
             this.user = user;
         }
-    public long getIdProfesor() {
+    public Long getIdProfesor() {
         return idProfesor;
     }
-    public void setIdProfesor(long idProfesor) {
+    public void setIdProfesor(Long idProfesor) {
         this.idProfesor = idProfesor;
     }
     public void setTelefono(Integer telefono) {
