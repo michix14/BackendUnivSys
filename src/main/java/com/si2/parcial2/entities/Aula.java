@@ -1,7 +1,8 @@
 package com.si2.parcial2.entities;
 
-import jakarta.annotation.Generated;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -11,30 +12,22 @@ import jakarta.persistence.Table;
 @Table(name = "aulas")
 public class Aula {
     @Id
-    @Generated(value = "org.hibernate.id.enhanced.SequenceStyleGenerator")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private Integer numero;
     private String tipo;
     private Integer capacidad;
 
     @ManyToOne 
-    @JoinColumn(name = "idModulo", nullable = false) 
+    @JoinColumn(name = "id_modulo", referencedColumnName = "id") 
     private Modulo modulo;
 
-    public Integer getCapacidad() {
-        return capacidad;
+    public Long getId() {
+        return id;
     }
 
-    public void setCapacidad(Integer capacidad) {
-        this.capacidad = capacidad;
-    }
-
-    public String getTipo() {
-        return tipo;
-    }
-
-    public void setTipo(String tipo) {
-        this.tipo = tipo;
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public Integer getNumero() {
@@ -45,15 +38,28 @@ public class Aula {
         this.numero = numero;
     }
 
-    public Long getId() {
-        return id;
+    public String getTipo() {
+        return tipo;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setTipo(String tipo) {
+        this.tipo = tipo;
     }
 
-    public Long getIdModulo() {
-        return modulo != null ? modulo.getId() : null;
+    public Integer getCapacidad() {
+        return capacidad;
     }
+
+    public void setCapacidad(Integer capacidad) {
+        this.capacidad = capacidad;
+    }
+
+    public Modulo getModulo() {
+        return modulo;
+    }
+
+    public void setModulo(Modulo modulo) {
+        this.modulo = modulo;
+    }
+
 }

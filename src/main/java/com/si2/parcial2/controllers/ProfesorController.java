@@ -3,7 +3,6 @@ package com.si2.parcial2.controllers;
 import java.util.List;
 import java.util.Optional;
 
-import org.hibernate.mapping.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 
@@ -48,7 +47,6 @@ public class ProfesorController {
     @GetMapping("/{idProfesor}")
     public ResponseEntity<?> view(@PathVariable Long idProfesor){
 
-        System.out.println(idProfesor +" aver esto es el id"); 
         Optional<profesor> profOptional= service.findById(idProfesor);
         if (profOptional.isPresent()) {
             return ResponseEntity.ok(profOptional.orElseThrow());
