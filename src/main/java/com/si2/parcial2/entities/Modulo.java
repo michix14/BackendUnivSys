@@ -2,7 +2,7 @@ package com.si2.parcial2.entities;
 
 
 
-import java.util.List;
+
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
