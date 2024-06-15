@@ -12,5 +12,6 @@ public interface ProfesorServices {
     profesor save(profesor p);
     void deleteById(Long idProfesor);
     profesor registerProfesorWithUser(profesor profesor, User user); 
+    profesor findByUserUsername(String username);
     
 }

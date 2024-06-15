@@ -56,4 +56,8 @@ public class ProfesorServicesImpl implements ProfesorServices {
         return repository.save(profesor);
     }
 
+    public profesor findByUserUsername(String username) {
+        return repository.findByUserUsername(username);
+    }
+
 }
