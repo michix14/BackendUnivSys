@@ -47,5 +47,10 @@ public class HorarioServicesImpl implements HorarioServices{
         List<Horario> horarios = repository.findByDiaAndHoraInicioAndHoraFinAndAulaId(dia, horaInicio, horaFin, aulaId);
         return !horarios.isEmpty();
     }
+    @Transactional(readOnly = true)
+    @Override
+    public boolean existsByDiaAndHoraAndProfesor(String dia, LocalTime horaInicio, LocalTime horaFin, Long profesorId) {
+        return repository.existsByDiaAndHoraAndProfesor(dia, horaInicio, horaFin, profesorId);
+    }
 
 }

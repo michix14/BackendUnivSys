@@ -40,16 +40,8 @@ public class Grupo {
     public void setMateria(Materia materia) {
         this.materia = materia;
     }
-@OneToMany(mappedBy = "grupo")
-private List<Horario> horarios;
 
-public List<Horario> getHorarios() {
-    return horarios;
-}
 
-public void setHorarios(List<Horario> horarios) {
-    this.horarios = horarios;
-}
 
     @ManyToOne
     @JoinColumn(name = "profesor_id", referencedColumnName = "idProfesor")
