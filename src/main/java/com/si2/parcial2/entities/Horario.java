@@ -39,7 +39,7 @@ public class Horario {
     private Aula aula;
     @ManyToOne
     @JoinColumn(name = "grupo_id", referencedColumnName = "id")
-    @JsonIgnore
+    
     private Grupo grupo;
     public Aula getAula() {
         return aula;

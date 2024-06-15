@@ -42,24 +42,30 @@ public class HorarioController {
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
+
     @PostMapping
     public ResponseEntity<?> create(@RequestBody Horario horario) {
         Optional<Aula> aula = aulaServices.findById(horario.getAula().getId());
         Optional<Grupo> grupo = grupoServices.findById(horario.getGrupo().getId());
-    
+
         if (!aula.isPresent() || !grupo.isPresent()) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-    
-        boolean exists = horarioServices.existsByDiaAndHoraAndAula(horario.getDia(), horario.getHoraInicio(), horario.getHoraFin(), horario.getAula().getId());
-        if (exists) {
+
+        boolean existsAula = horarioServices.existsByDiaAndHoraAndAula(horario.getDia(), horario.getHoraInicio(), horario.getHoraFin(), horario.getAula().getId());
+        if (existsAula) {
             return new ResponseEntity<>("Ya existe un horario con el mismo día y hora para esta aula", HttpStatus.CONFLICT);
         }
-    
+
+        boolean existsProfesor = horarioServices.existsByDiaAndHoraAndProfesor(horario.getDia(), horario.getHoraInicio(), horario.getHoraFin(), grupo.get().getProfesor().getIdProfesor());
+        if (existsProfesor) {
+            return new ResponseEntity<>("El profesor ya tiene un horario asignado en este intervalo de tiempo", HttpStatus.CONFLICT);
+        }
+
         horario.setAula(aula.get());
         horario.setGrupo(grupo.get());
         Horario savedHorario = horarioServices.save(horario);
-    
+
         return ResponseEntity.status(HttpStatus.CREATED).body(savedHorario);
     }
 

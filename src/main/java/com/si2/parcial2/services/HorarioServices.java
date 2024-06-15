@@ -14,5 +14,6 @@ public interface HorarioServices {
     Horario save(Horario h);
     void deleteById(Long id);
     boolean existsByDiaAndHoraAndAula(String dia, LocalTime horaInicio, LocalTime horaFin, Long aulaId);
+    boolean existsByDiaAndHoraAndProfesor(String dia, LocalTime horaInicio, LocalTime horaFin, Long profesorId);
 
 }
