@@ -2,16 +2,22 @@ package com.si2.parcial2.controllers;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.si2.parcial2.entities.Grupo;
+import com.si2.parcial2.entities.Materia;
 import com.si2.parcial2.entities.User;
 import com.si2.parcial2.entities.profesor;
+import com.si2.parcial2.projection.MateriaInfo;
 import com.si2.parcial2.services.ProfesorServices;
 import com.si2.parcial2.services.UserService;
 
@@ -27,43 +33,59 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PutMapping;
 
-
-
-
-@CrossOrigin(origins="*", originPatterns = "*")
+@CrossOrigin(origins = "*", originPatterns = "*")
 @RestController
 @RequestMapping("/api/profesor")
 public class ProfesorController {
-     @Autowired   
+    @Autowired
     private ProfesorServices service;
-     @Autowired
+    @Autowired
     private UserService userService;
 
-    @GetMapping    
-    public List<profesor> list(){
+    @GetMapping
+    public List<profesor> list() {
         return service.findAll();
     }
 
-    @GetMapping("/{idProfesor}")
-    public ResponseEntity<?> view(@PathVariable Long idProfesor){
+    @GetMapping("/materias")
+    public ResponseEntity<List<MateriaInfo>> getMateriasByLoggedProfesor() {
+        String username = getCurrentUsername();
+        profesor profesor = service.findByUserUsername(username);
+        Long idProfesor = profesor.getIdProfesor();
 
-        Optional<profesor> profOptional= service.findById(idProfesor);
+        List<MateriaInfo> materiasInfo = service.findMateriasByProfesorId(idProfesor);
+
+        return ResponseEntity.ok(materiasInfo);
+    }
+
+    private String getCurrentUsername() {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (principal instanceof UserDetails) {
+            return ((UserDetails) principal).getUsername();
+        } else {
+            return principal.toString();
+        }
+    }
+
+    @GetMapping("/{idProfesor}")
+    public ResponseEntity<?> view(@PathVariable Long idProfesor) {
+
+        Optional<profesor> profOptional = service.findById(idProfesor);
         if (profOptional.isPresent()) {
             return ResponseEntity.ok(profOptional.orElseThrow());
         }
         return ResponseEntity.notFound().build();
     }
-    
-    
-    public profesor save(profesor p){
+
+    public profesor save(profesor p) {
         return service.save(p);
     }
 
     @PostMapping
-    public ResponseEntity<?> create(@RequestBody profesor p){
+    public ResponseEntity<?> create(@RequestBody profesor p) {
         return ResponseEntity.status(HttpStatus.CREATED).body(save(p));
     }
-    
+
     @PutMapping("/{idProfesor}")
     public ResponseEntity<?> update(@RequestBody profesor profesor, @PathVariable Long idProfesor) {
         Optional<profesor> profOptional = service.findById(idProfesor);
@@ -77,9 +99,10 @@ public class ProfesorController {
         }
         return ResponseEntity.notFound().build();
     }
+
     @DeleteMapping("/{idProfesor}")
-    public ResponseEntity<?> delete(@PathVariable Long idProfesor){
-        Optional<profesor> profOptional= service.findById(idProfesor);
+    public ResponseEntity<?> delete(@PathVariable Long idProfesor) {
+        Optional<profesor> profOptional = service.findById(idProfesor);
         if (profOptional.isPresent()) {
             service.deleteById(idProfesor);
             return ResponseEntity.ok().build();
@@ -88,7 +111,7 @@ public class ProfesorController {
 
     }
 
-  @PostMapping("/register")
+    @PostMapping("/register")
     public ResponseEntity<?> registerProfesorWithUser(@Valid @RequestBody profesor p, BindingResult result) {
         if (result.hasErrors()) {
             return ResponseEntity.badRequest().body("Validation errors");

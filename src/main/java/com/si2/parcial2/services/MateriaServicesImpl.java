@@ -1,6 +1,7 @@
 package com.si2.parcial2.services;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +40,11 @@ public class MateriaServicesImpl implements MateriaServices {
     @Override
     public void deleteById(Long id) {
         repository.deleteById(id);
+    }
+    @Override
+    @Transactional(readOnly = true)
+    public List<Map<String, Object>> findMateriasByProfesorId(Long profesorId) {
+        return repository.findMateriasByProfesorId(profesorId);
     }
 
 }
