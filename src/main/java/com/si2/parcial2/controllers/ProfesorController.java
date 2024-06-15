@@ -17,6 +17,7 @@ import com.si2.parcial2.entities.Grupo;
 import com.si2.parcial2.entities.Materia;
 import com.si2.parcial2.entities.User;
 import com.si2.parcial2.entities.profesor;
+import com.si2.parcial2.projection.MateriaInfo;
 import com.si2.parcial2.services.ProfesorServices;
 import com.si2.parcial2.services.UserService;
 
@@ -47,16 +48,14 @@ public class ProfesorController {
     }
 
     @GetMapping("/materias")
-    public ResponseEntity<List<Materia>> getMateriasByLoggedProfesor() {
+    public ResponseEntity<List<MateriaInfo>> getMateriasByLoggedProfesor() {
         String username = getCurrentUsername();
         profesor profesor = service.findByUserUsername(username);
+        Long idProfesor = profesor.getIdProfesor();
 
-        List<Materia> materias = profesor.getGrupos().stream()
-                .map(Grupo::getMateria)
-                .distinct()
-                .collect(Collectors.toList());
+        List<MateriaInfo> materiasInfo = service.findMateriasByProfesorId(idProfesor);
 
-        return ResponseEntity.ok(materias);
+        return ResponseEntity.ok(materiasInfo);
     }
 
     private String getCurrentUsername() {

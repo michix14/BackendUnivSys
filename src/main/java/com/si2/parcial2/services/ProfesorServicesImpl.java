@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.si2.parcial2.entities.User;
 import com.si2.parcial2.entities.profesor;
+import com.si2.parcial2.projection.MateriaInfo;
 import com.si2.parcial2.repositories.ProfesorRepository;
 import com.si2.parcial2.repositories.UserRepository;
 
@@ -60,4 +61,7 @@ public class ProfesorServicesImpl implements ProfesorServices {
         return repository.findByUserUsername(username);
     }
 
+        public List<MateriaInfo> findMateriasByProfesorId(Long idProfesor) {
+        return repository.findMateriasByProfesorId(idProfesor);
+    }
 }
