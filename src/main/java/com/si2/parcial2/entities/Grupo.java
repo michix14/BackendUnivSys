@@ -2,13 +2,17 @@ package com.si2.parcial2.entities;
 
 
 
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
@@ -24,7 +28,18 @@ public class Grupo {
     public Carrera getCarrera() {
         return carrera;
     }
+    @JsonIgnore
+    @OneToMany(mappedBy = "grupo")
+    private List<Horario> horarios;
     
+    public List<Horario> getHorarios() {
+        return horarios;
+    }
+
+    public void setHorarios(List<Horario> horarios) {
+        this.horarios = horarios;
+    }
+
     public void setCarrera(Carrera carrera) {
         this.carrera = carrera;
     }
