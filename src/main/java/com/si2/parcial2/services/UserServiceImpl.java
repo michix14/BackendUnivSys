@@ -56,5 +56,8 @@ public class UserServiceImpl implements UserService{
     public boolean existsByUsername(String username) {
         return repository.existsByUsername(username);
     }
-    
+    @Override
+    @Transactional(readOnly = true)
+    public Optional<User> findById(Long id) {
+        return repository.findById(id);}
 }
