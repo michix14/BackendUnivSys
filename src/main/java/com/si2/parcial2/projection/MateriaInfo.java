@@ -9,4 +9,5 @@ public interface MateriaInfo {
     String getNumeroModulo();
     String getNumeroAula();
     String getTipoAula();
+    String getIdGrupo();
 }
