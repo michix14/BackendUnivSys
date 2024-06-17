@@ -11,7 +11,7 @@ import com.si2.parcial2.projection.MateriaInfo;
 
 public interface ProfesorRepository extends JpaRepository<profesor, Long>{
     profesor findByUserUsername(String username);
-        @Query(value = "SELECT m.nombre as materiaNombre, g.nombre as grupoNombre, h.dia, h.hora_inicio as horaInicio, h.hora_fin as horaFin, " +
+        @Query(value = "SELECT m.nombre as materiaNombre, g.nombre as grupoNombre,g.id as idGrupo , h.dia, h.hora_inicio as horaInicio, h.hora_fin as horaFin, " +
                    "mo.numero as numeroModulo, a.numero as numeroAula, a.tipo as tipoAula " +
                    "FROM grupos g " +
                    "JOIN profesor p ON g.profesor_id = p.id_profesor " +
