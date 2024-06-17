@@ -51,26 +51,23 @@ public class AsistenciaController {
         }
         return ResponseEntity.notFound().build();
     }
-
     @PostMapping
-    public ResponseEntity<?> create(@RequestBody Asistencia asistencia, @RequestParam Double latitud, @RequestParam Double longitud) {
+    public ResponseEntity<?> create(@RequestBody Asistencia asistencia, @RequestParam Float latitud, @RequestParam Float longitud) {
         Optional<Grupo> optionalGrupo = grupoServices.findById(asistencia.getGrupo().getId());
         
         if (!optionalGrupo.isPresent()) {
             return new ResponseEntity<>("Grupo no encontrado", HttpStatus.BAD_REQUEST);
         }
-
+    
         Grupo grupo = optionalGrupo.get();
         if (grupo.getHorarios().isEmpty()) {
             return new ResponseEntity<>("Horarios no encontrados para el grupo", HttpStatus.BAD_REQUEST);
         }
-
-        boolean valid = false;
-
-        // Obtener la hora y el día actuales del sistema
+    
+        // Obtener la hora actual del sistema
         LocalTime currentTime = LocalTime.now();
         String currentDay = LocalDate.now().getDayOfWeek().getDisplayName(TextStyle.FULL, new Locale("es", "ES"));
-
+    
         for (Horario horario : grupo.getHorarios()) {
             // Validar el día en español
             if (horario.getDia().equalsIgnoreCase(currentDay)) {
@@ -78,37 +75,52 @@ public class AsistenciaController {
                 LocalTime startTime = horario.getHoraInicio();
                 if (currentTime.isAfter(startTime.minusMinutes(10)) && currentTime.isBefore(horario.getHoraFin().plusMinutes(10))) {
                     // Validar la ubicación
-                    double distance = distance(horario.getAula().getModulo().getLatitud(), horario.getAula().getModulo().getLongitud(), latitud, longitud);
-                    if (distance <= 100) {
-                        valid = true;
-                        break;
+                    float distance = distance(horario.getAula().getModulo().getLatitud(), horario.getAula().getModulo().getLongitud(), latitud, longitud);
+                    if (distance <= 50) { // Validar en un radio de 50 metros (0.05 km)
+                        // Marcar como atrasado si llega después de 10 minutos de la hora de inicio
+                        if (currentTime.isAfter(startTime.plusMinutes(10))) {
+                            asistencia.setEstado("Atrasado");
+                        } else {
+                            asistencia.setEstado("Presente");
+                        }
+    
+                        // Guardar la asistencia
+                        Asistencia savedAsistencia = asistenciaServices.save(asistencia);
+                        return ResponseEntity.status(HttpStatus.CREATED).body(savedAsistencia);
                     }
                 }
             }
         }
+    
+        return new ResponseEntity<>("No se cumplen las condiciones de hora, día o ubicación válida en 50 metros", HttpStatus.BAD_REQUEST);
+    }
+    
 
-        if (!valid) {
-            return new ResponseEntity<>("No se cumplen las condiciones de hora, día y ubicación", HttpStatus.BAD_REQUEST);
-        }
+    
 
+    private float distance(float lat1, float lon1, float lat2, float lon2) {
+        // Radio de la Tierra en kilómetros
+        final float R = 6371.0f; // Radio de la Tierra en kilómetros
+    
+        // Convertir coordenadas a radianes
+        float latDistance = (float) Math.toRadians(lat2 - lat1);
+        float lonDistance = (float) Math.toRadians(lon2 - lon1);
+    
+        // Aplicar la fórmula de Haversine
+        float a = (float) (Math.sin(latDistance / 2) * Math.sin(latDistance / 2)
+                + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2))
+                * Math.sin(lonDistance / 2) * Math.sin(lonDistance / 2));
+        float c = 2 * (float) Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        float distance = R * c * 1000; // Convertir a metros
+    
+        return distance;
+    }
+    @PostMapping("/registrar")
+    public ResponseEntity<?> createLicencia(@RequestBody Asistencia asistencia) {
         Asistencia savedAsistencia = asistenciaServices.save(asistencia);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedAsistencia);
     }
-
-    private double distance(double lat1, double lon1, double lat2, double lon2) {
-        // Fórmula de Haversine para calcular la distancia entre dos puntos
-        final int R = 6371; // Radio de la Tierra en kilómetros
-
-        double latDistance = Math.toRadians(lat2 - lat1);
-        double lonDistance = Math.toRadians(lon2 - lon1);
-        double a = Math.sin(latDistance / 2) * Math.sin(latDistance / 2)
-                + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2))
-                * Math.sin(lonDistance / 2) * Math.sin(lonDistance / 2);
-        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-        double distance = R * c * 1000; // Convertir a metros
-
-        return distance;
-    }
+    
 
     @PutMapping("/{id}")
     public ResponseEntity<Asistencia> update(@RequestBody Asistencia asistencia, @PathVariable Long id) {
