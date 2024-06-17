@@ -1,5 +1,6 @@
 package com.si2.parcial2.services;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -38,6 +39,11 @@ public class AsistenciaServicesImpl implements AsistenciaServices{
     @Transactional
     public void deleteById(Long id) {
         repository.deleteById(id);
+    }
+
+    @Override
+    public Optional<Asistencia> findByGrupoAndFecha(Long grupoId, LocalDate fecha) {
+        return repository.findByGrupoIdAndFecha(grupoId, fecha);
     }
 
 }
